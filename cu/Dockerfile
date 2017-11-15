@@ -6,6 +6,7 @@
 FROM registry.access.redhat.com/rhel7/rhel:latest
 
 # For environment variables list, see https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables
+# If you want to specify LCID, you may not set here. You should specify with running a docker. ``docker run -e "MSSQL_LCID=1041" <image>``
 ARG SA_PASSWORD='StrongP@ssW0rd'
 ARG TCP_PORT=1433
 ARG PID=Developer
