@@ -5,6 +5,7 @@
 # Base OS layer: latest RHEL 7
 FROM registry.access.redhat.com/rhel7/rhel:latest
 
+
 ### Atomic/OpenShift Labels - https://github.com/projectatomic/ContainerApplicationGenericLabels
 LABEL name="tanaka-takayoshi/mssql-server-linux" \
       vendor="tanaka_733" \
@@ -21,9 +22,13 @@ LABEL name="tanaka-takayoshi/mssql-server-linux" \
       io.k8s.description="MS SQL Server is ....." \
       io.k8s.display-name="MS SQL Server Developer Edition"
 
-ARG SA_PASSWORD='StrongP@ssW0rd'
 
-ENV ACCEPT_EULA=Y MSSQL_PID=Developer MSSQL_SA_PASSWORD=$SA_PASSWORD
+# For environment variables list, see https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables
+# If you want to specify LCID, you may not set here. You should specify with running a docker. ``docker run -e "MSSQL_LCID=1041" <image>``
+ARG SA_PASSWORD='StrongP@ssW0rd'
+ARG TCP_PORT=1433
+ARG PID=Developer
+ENV ACCEPT_EULA=Y MSSQL_PID=$PID MSSQL_SA_PASSWORD=$SA_PASSWORD MSSQL_TCP_PORT=$TCP_PORT
 
 # Install latest mssql-server package
 # You don't have to register subscription if you build docker image on registered RHEL machine.
@@ -46,9 +51,9 @@ RUN mkdir -p /var/opt/mssql && \
 USER 10001
 
 # Default SQL Server TCP/Port
-EXPOSE 1433
+EXPOSE $TCP_PORT
 
-ENV PATH $PATH:/opt/mssql-tools/bin
+ENV PATH $PATH:/opt/mssql-tools/binTH $PATH:/opt/mssql-tools/bin
 
 ### user name recognition at runtime w/ an arbitrary uid - for OpenShift deployments
 ENTRYPOINT [ "uid_entrypoint" ]
